@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "entraAppServerDisplayName": {
+      "value": "Azure MCP Multi-Service Server API"
+    },
+    "entraAppClientDisplayName": {
+      "value": "Azure MCP Multi-Service Custom Connector"
+    },
+    "acaName": {
+      "value": "azure-mcp-multiservice-server"
+    },
+    "appInsightsConnectionString": {
+      "value": "DISABLED"
+    },
+    "serviceManagementReference": {
+      "value": ""
+    },
+    "mcpNamespaces": {
+      "value": [
+        "storage",
+        "virtualdesktop",
+        "compute",
+        "files",
+        "keyvault"
+      ]
+    },
+    "readOnlyMode": {
+      "value": false
+    }
+  }
+}

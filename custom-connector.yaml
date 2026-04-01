@@ -1,0 +1,46 @@
+swagger: '2.0'
+info:
+  title: AzureMcpMultiServiceSandbox
+  description: >
+    Connector to connect to an Azure MCP multi-service server authenticated via OAuth (Entra ID).
+  version: '1.0'
+
+host: azure-mcp-multiservice-server.salmonmeadow-5a07697c.centralindia.azurecontainerapps.io
+basePath: /
+schemes:
+  - https
+
+consumes: []
+produces: []
+
+paths:
+  /:
+    post:
+      summary: Execute MCP Tool
+      description: Executes MCP tools via streamable protocol.
+      operationId: McpToolExecute
+      x-ms-agentic-protocol: mcp-streamable-1.0
+      responses:
+        '200':
+          description: Success
+
+definitions: {}
+parameters: {}
+responses: {}
+
+securityDefinitions:
+  oauth2-auth:
+    type: oauth2
+    flow: accessCode
+    authorizationUrl: https://login.microsoftonline.com/01f48ee8-94f3-448d-90de-0a89fff4a6a4/oauth2/v2.0/authorize
+    tokenUrl: https://login.microsoftonline.com/01f48ee8-94f3-448d-90de-0a89fff4a6a4/oauth2/v2.0/token
+    scopes:
+      api://b7800d5e-8f71-4f96-85f0-a618bd0536e5/Mcp.Tools.ReadWrite: Access MCP tools
+
+security:
+  - oauth2-auth:
+      - api://b7800d5e-8f71-4f96-85f0-a618bd0536e5/Mcp.Tools.ReadWrite
+
+tags:
+  - name: MCP
+    description: MCP Tool Execution APIs
