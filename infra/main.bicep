@@ -13,6 +13,9 @@ param deployClassicFilesCompanion bool = false
 @description('Name for the classic Azure Files companion container app.')
 param classicFilesCompanionName string = '${acaName}-classic-files'
 
+@description('Managed environment name for the classic Azure Files companion app.')
+param classicFilesCompanionManagedEnvironmentName string = '${acaName}-env'
+
 @description('Container image for the classic Azure Files companion service.')
 param classicFilesCompanionImage string = ''
 
@@ -121,7 +124,7 @@ module classicFilesCompanion 'modules/aca-classic-files-companion.bicep' = if (d
   params: {
     location: location
     name: classicFilesCompanionName
-    managedEnvironmentName: '${acaName}-env'
+    managedEnvironmentName: classicFilesCompanionManagedEnvironmentName
     image: classicFilesCompanionImage
     appInsightsConnectionString: appInsights.outputs.connectionString
     azureMcpCollectTelemetry: string(!empty(appInsights.outputs.connectionString))

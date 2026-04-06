@@ -20,6 +20,9 @@
     "classicFilesCompanionName": {
       "value": "azure-mcp-classic-files-server"
     },
+    "classicFilesCompanionManagedEnvironmentName": {
+      "value": "azure-mcp-classic-files-env"
+    },
     "classicFilesCompanionImage": {
       "value": "mcpavd171147.azurecr.io/classic-files-mcp:1"
     },
