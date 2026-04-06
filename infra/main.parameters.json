@@ -14,6 +14,15 @@
     "acaName": {
       "value": "azure-mcp-multiservice-server"
     },
+    "deployClassicFilesCompanion": {
+      "value": false
+    },
+    "classicFilesCompanionName": {
+      "value": "azure-mcp-classic-files-server"
+    },
+    "classicFilesCompanionImage": {
+      "value": ""
+    },
     "appInsightsConnectionString": {
       "value": "DISABLED"
     },
@@ -25,8 +34,9 @@
         "storage",
         "virtualdesktop",
         "compute",
-        "files",
-        "keyvault"
+        "fileshares",
+        "keyvault",
+        "group"
       ]
     },
     "readOnlyMode": {

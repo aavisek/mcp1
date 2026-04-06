@@ -7,6 +7,15 @@ param readOnlyMode bool = true
 @description('Name for the Azure Container App')
 param acaName string
 
+@description('Deploy the classic Azure Files companion MCP service.')
+param deployClassicFilesCompanion bool = false
+
+@description('Name for the classic Azure Files companion container app.')
+param classicFilesCompanionName string = '${acaName}-classic-files'
+
+@description('Container image for the classic Azure Files companion service.')
+param classicFilesCompanionImage string = ''
+
 @description('Azure MCP Server namespaces to expose.')
 @minLength(1)
 @maxLength(6)
@@ -14,8 +23,9 @@ param mcpNamespaces array = [
   'storage'
   'virtualdesktop'
   'compute'
-  'files'
+  'fileshares'
   'keyvault'
+  'group'
 ]
 
 @description('Display name for the Server Entra App')
@@ -101,6 +111,20 @@ module aca 'modules/aca-infrastructure.bicep' = {
     azureAdInstance: environment().authentication.loginEndpoint
     namespaces: mcpNamespaces
     readOnlyMode: readOnlyMode
+    userAssignedManagedIdentityId: identity.outputs.managedIdentityId
+    userAssignedManagedIdentityClientId: identity.outputs.managedIdentityClientId
+  }
+}
+
+module classicFilesCompanion 'modules/aca-classic-files-companion.bicep' = if (deployClassicFilesCompanion && !empty(classicFilesCompanionImage)) {
+  name: 'classic-files-companion'
+  params: {
+    location: location
+    name: classicFilesCompanionName
+    managedEnvironmentName: '${acaName}-env'
+    image: classicFilesCompanionImage
+    appInsightsConnectionString: appInsights.outputs.connectionString
+    azureMcpCollectTelemetry: string(!empty(appInsights.outputs.connectionString))
     userAssignedManagedIdentityId: identity.outputs.managedIdentityId
     userAssignedManagedIdentityClientId: identity.outputs.managedIdentityClientId
   }
