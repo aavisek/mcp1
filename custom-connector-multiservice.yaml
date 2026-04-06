@@ -1,11 +1,11 @@
 swagger: '2.0'
 info:
-  title: AzureMcpClassicFilesCompanion
+  title: AzureMcpMultiServiceSandbox
   description: >
-    Connector to connect to the classic Azure Files MCP companion server.
+    Connector to connect to the Azure MCP multi-service server authenticated via OAuth (Entra ID).
   version: '1.0'
 
-host: azure-mcp-classic-files-server.calmpebble-33abca6a.centralindia.azurecontainerapps.io
+host: azure-mcp-multiservice-server.salmonmeadow-5a07697c.centralindia.azurecontainerapps.io
 basePath: /
 schemes:
   - https
