@@ -15,13 +15,13 @@
       "value": "azure-mcp-multiservice-server"
     },
     "deployClassicFilesCompanion": {
-      "value": false
+      "value": true
     },
     "classicFilesCompanionName": {
       "value": "azure-mcp-classic-files-server"
     },
     "classicFilesCompanionImage": {
-      "value": ""
+      "value": "mcpavd171147.azurecr.io/classic-files-mcp:1"
     },
     "appInsightsConnectionString": {
       "value": "DISABLED"
