@@ -2,6 +2,7 @@ import express from "express";
 import { randomUUID } from "node:crypto";
 import { DefaultAzureCredential } from "@azure/identity";
 import { StorageManagementClient } from "@azure/arm-storage";
+import { ShareServiceClient } from "@azure/storage-file-share";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
@@ -14,6 +15,22 @@ const credential = new DefaultAzureCredential();
 
 function storageClient(subscriptionId) {
   return new StorageManagementClient(credential, subscriptionId);
+}
+
+function shareServiceClient(storageAccount) {
+  return new ShareServiceClient(`https://${storageAccount}.file.core.windows.net`, credential);
+}
+
+function normalizeDirectoryPath(directoryPath = "") {
+  if (typeof directoryPath !== "string") {
+    return "";
+  }
+
+  return directoryPath.trim().replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
+}
+
+function combinePath(base, name) {
+  return base ? `${base}/${name}` : name;
 }
 
 function normalizeShare(share) {
@@ -65,6 +82,38 @@ const TOOL_DEFINITIONS = [
       required: ["subscriptionId", "resourceGroup", "storageAccount", "shareName"],
       additionalProperties: false
     }
+  },
+  {
+    name: "classic_files_directory_list",
+    title: "List Files And Folders In Share Path",
+    description:
+      "List files and folders under a specific path in a classic Azure Files share.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        storageAccount: { type: "string", minLength: 1 },
+        shareName: { type: "string", minLength: 1 },
+        directoryPath: { type: "string" }
+      },
+      required: ["storageAccount", "shareName"],
+      additionalProperties: false
+    }
+  },
+  {
+    name: "classic_files_directory_size",
+    title: "Get Folder Size In Share",
+    description:
+      "Calculate total size recursively for a folder path in a classic Azure Files share.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        storageAccount: { type: "string", minLength: 1 },
+        shareName: { type: "string", minLength: 1 },
+        directoryPath: { type: "string" }
+      },
+      required: ["storageAccount", "shareName"],
+      additionalProperties: false
+    }
   }
 ];
 
@@ -93,6 +142,105 @@ async function getClassicFileShare({ subscriptionId, resourceGroup, storageAccou
   };
 }
 
+async function getDirectoryClient(storageAccount, shareName, directoryPath = "") {
+  const normalizedPath = normalizeDirectoryPath(directoryPath);
+  const serviceClient = shareServiceClient(storageAccount);
+  const shareClient = serviceClient.getShareClient(shareName);
+
+  const shareExists = await shareClient.exists();
+  if (!shareExists) {
+    throw new Error(`Share not found: ${shareName}`);
+  }
+
+  const directoryClient = normalizedPath
+    ? shareClient.getDirectoryClient(normalizedPath)
+    : shareClient.rootDirectoryClient;
+
+  const directoryExists = await directoryClient.exists();
+  if (!directoryExists) {
+    throw new Error(`Directory not found: ${normalizedPath || "/"}`);
+  }
+
+  return { directoryClient, normalizedPath };
+}
+
+async function listDirectoryEntries({ storageAccount, shareName, directoryPath = "" }) {
+  const { directoryClient, normalizedPath } = await getDirectoryClient(
+    storageAccount,
+    shareName,
+    directoryPath
+  );
+
+  const entries = [];
+  for await (const item of directoryClient.listFilesAndDirectories()) {
+    if (item.kind === "directory") {
+      entries.push({
+        name: item.name,
+        path: combinePath(normalizedPath, item.name),
+        kind: "directory"
+      });
+    } else {
+      entries.push({
+        name: item.name,
+        path: combinePath(normalizedPath, item.name),
+        kind: "file",
+        sizeBytes: item.properties?.contentLength ?? 0
+      });
+    }
+  }
+
+  return {
+    message: "Directory entries retrieved.",
+    shareName,
+    directoryPath: normalizedPath || "/",
+    count: entries.length,
+    entries
+  };
+}
+
+async function calculateDirectorySizeRecursive(directoryClient) {
+  let totalBytes = 0;
+  let fileCount = 0;
+  let folderCount = 0;
+
+  for await (const item of directoryClient.listFilesAndDirectories()) {
+    if (item.kind === "directory") {
+      folderCount += 1;
+      const childDirectoryClient = directoryClient.getDirectoryClient(item.name);
+      const child = await calculateDirectorySizeRecursive(childDirectoryClient);
+      totalBytes += child.totalBytes;
+      fileCount += child.fileCount;
+      folderCount += child.folderCount;
+    } else {
+      totalBytes += item.properties?.contentLength ?? 0;
+      fileCount += 1;
+    }
+  }
+
+  return { totalBytes, fileCount, folderCount };
+}
+
+async function getDirectorySize({ storageAccount, shareName, directoryPath = "" }) {
+  const { directoryClient, normalizedPath } = await getDirectoryClient(
+    storageAccount,
+    shareName,
+    directoryPath
+  );
+
+  const result = await calculateDirectorySizeRecursive(directoryClient);
+
+  return {
+    message: "Directory size calculated.",
+    shareName,
+    directoryPath: normalizedPath || "/",
+    totalBytes: result.totalBytes,
+    totalMiB: Number((result.totalBytes / (1024 * 1024)).toFixed(3)),
+    totalGiB: Number((result.totalBytes / (1024 * 1024 * 1024)).toFixed(3)),
+    fileCount: result.fileCount,
+    folderCount: result.folderCount
+  };
+}
+
 function validateRequired(args, requiredFields) {
   for (const field of requiredFields) {
     if (typeof args?.[field] !== "string" || args[field].trim().length === 0) {
@@ -110,6 +258,16 @@ async function executeTool(name, args) {
   if (name === "classic_files_share_get") {
     validateRequired(args, ["subscriptionId", "resourceGroup", "storageAccount", "shareName"]);
     return getClassicFileShare(args);
+  }
+
+  if (name === "classic_files_directory_list") {
+    validateRequired(args, ["storageAccount", "shareName"]);
+    return listDirectoryEntries(args);
+  }
+
+  if (name === "classic_files_directory_size") {
+    validateRequired(args, ["storageAccount", "shareName"]);
+    return getDirectorySize(args);
   }
 
   throw new Error(`Unknown tool: ${name}`);
@@ -266,6 +424,56 @@ function createServer() {
         storageAccount,
         shareName
       });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }
+        ]
+      };
+    }
+  );
+
+  server.registerTool(
+    "classic_files_directory_list",
+    {
+      title: "List Files And Folders In Share Path",
+      description: "List files and folders under a specific path in a classic Azure Files share.",
+      inputSchema: {
+        storageAccount: z.string().min(1),
+        shareName: z.string().min(1),
+        directoryPath: z.string().optional()
+      }
+    },
+    async ({ storageAccount, shareName, directoryPath }) => {
+      const result = await listDirectoryEntries({ storageAccount, shareName, directoryPath });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(result, null, 2)
+          }
+        ]
+      };
+    }
+  );
+
+  server.registerTool(
+    "classic_files_directory_size",
+    {
+      title: "Get Folder Size In Share",
+      description: "Calculate total size recursively for a folder path in a classic Azure Files share.",
+      inputSchema: {
+        storageAccount: z.string().min(1),
+        shareName: z.string().min(1),
+        directoryPath: z.string().optional()
+      }
+    },
+    async ({ storageAccount, shareName, directoryPath }) => {
+      const result = await getDirectorySize({ storageAccount, shareName, directoryPath });
 
       return {
         content: [
