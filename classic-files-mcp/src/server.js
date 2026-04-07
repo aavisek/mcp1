@@ -12,6 +12,7 @@ app.use(express.json({ limit: "1mb" }));
 
 const PORT = Number(process.env.PORT || 8081);
 const credential = new DefaultAzureCredential();
+const FILE_REQUEST_INTENT_OPTIONS = { fileRequestIntent: "backup" };
 
 function storageClient(subscriptionId) {
   return new StorageManagementClient(credential, subscriptionId);
@@ -147,7 +148,7 @@ async function getDirectoryClient(storageAccount, shareName, directoryPath = "")
   const serviceClient = shareServiceClient(storageAccount);
   const shareClient = serviceClient.getShareClient(shareName);
 
-  const shareExists = await shareClient.exists();
+  const shareExists = await shareClient.exists(FILE_REQUEST_INTENT_OPTIONS);
   if (!shareExists) {
     throw new Error(`Share not found: ${shareName}`);
   }
@@ -156,7 +157,7 @@ async function getDirectoryClient(storageAccount, shareName, directoryPath = "")
     ? shareClient.getDirectoryClient(normalizedPath)
     : shareClient.rootDirectoryClient;
 
-  const directoryExists = await directoryClient.exists();
+  const directoryExists = await directoryClient.exists(FILE_REQUEST_INTENT_OPTIONS);
   if (!directoryExists) {
     throw new Error(`Directory not found: ${normalizedPath || "/"}`);
   }
@@ -172,7 +173,7 @@ async function listDirectoryEntries({ storageAccount, shareName, directoryPath =
   );
 
   const entries = [];
-  for await (const item of directoryClient.listFilesAndDirectories()) {
+  for await (const item of directoryClient.listFilesAndDirectories(FILE_REQUEST_INTENT_OPTIONS)) {
     if (item.kind === "directory") {
       entries.push({
         name: item.name,
@@ -203,7 +204,7 @@ async function calculateDirectorySizeRecursive(directoryClient) {
   let fileCount = 0;
   let folderCount = 0;
 
-  for await (const item of directoryClient.listFilesAndDirectories()) {
+  for await (const item of directoryClient.listFilesAndDirectories(FILE_REQUEST_INTENT_OPTIONS)) {
     if (item.kind === "directory") {
       folderCount += 1;
       const childDirectoryClient = directoryClient.getDirectoryClient(item.name);
