@@ -24,7 +24,7 @@
       "value": "azure-mcp-classic-files-env"
     },
     "classicFilesCompanionImage": {
-      "value": "mcpavd171147.azurecr.io/classic-files-mcp:1"
+      "value": "mcpavd171147.azurecr.io/classic-files-mcp:2"
     },
     "appInsightsConnectionString": {
       "value": "DISABLED"
