@@ -9,7 +9,7 @@ host: azure-mcp-classic-files-server.calmpebble-33abca6a.centralindia.azureconta
 basePath: /
 schemes:
   - https
-
+# Note: This connector does not require authentication, as the server is protected by network-level security (e.g., VNet, private endpoint).
 consumes: []
 produces: []
 
