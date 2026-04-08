@@ -1,22 +1,21 @@
 swagger: '2.0'
 info:
-  title: AzureMcpClassicFilesCompanion
+  title: AzureAvdConnector2
   description: >
-    Connector to connect to the classic Azure Files MCP companion server.
+    Connector 2 for Azure AVD MCP tools secured with OAuth (Entra ID).
   version: '1.0'
 
 host: azure-mcp-classic-files-server.calmpebble-33abca6a.centralindia.azurecontainerapps.io
 basePath: /
 schemes:
   - https
-# Note: This connector does not require authentication, as the server is protected by network-level security (e.g., VNet, private endpoint).
 consumes: []
 produces: []
 
 paths:
   /:
     post:
-      summary: Execute MCP Tool
+      summary: Execute Azure AVD Connector 2 MCP Tool
       description: Executes MCP tools via streamable protocol.
       operationId: McpToolExecute
       x-ms-agentic-protocol: mcp-streamable-1.0

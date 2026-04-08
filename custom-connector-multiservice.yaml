@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
-  title: AzureMcpMultiServiceSandbox
+  title: AzureAvdConnector1
   description: >
-    Connector to connect to the Azure MCP multi-service server authenticated via OAuth (Entra ID).
+    Connector 1 for Azure AVD MCP tools secured with OAuth (Entra ID).
   version: '1.0'
 
 host: azure-mcp-multiservice-server.salmonmeadow-5a07697c.centralindia.azurecontainerapps.io
@@ -16,7 +16,7 @@ produces: []
 paths:
   /:
     post:
-      summary: Execute MCP Tool
+      summary: Execute Azure AVD Connector 1 MCP Tool
       description: Executes MCP tools via streamable protocol.
       operationId: McpToolExecute
       x-ms-agentic-protocol: mcp-streamable-1.0
