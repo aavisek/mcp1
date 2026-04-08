@@ -328,8 +328,7 @@ const TOOL_CATALOG = [
         resourceGroup: { type: "string", minLength: 1 },
         storageAccount: { type: "string", minLength: 1 }
       },
-      required: ["subscriptionId", "resourceGroup", "storageAccount"],
-      additionalProperties: false
+      required: ["subscriptionId", "resourceGroup", "storageAccount"]
     },
     mcpInputSchema: {
       subscriptionId: z.string().min(1),
@@ -340,7 +339,7 @@ const TOOL_CATALOG = [
       subscriptionId: z.string().min(1),
       resourceGroup: z.string().min(1),
       storageAccount: z.string().min(1)
-    }).strict(),
+    }).passthrough(),
     run: listClassicFileShares
   },
   {
@@ -355,8 +354,7 @@ const TOOL_CATALOG = [
         storageAccount: { type: "string", minLength: 1 },
         shareName: { type: "string", minLength: 1 }
       },
-      required: ["subscriptionId", "resourceGroup", "storageAccount", "shareName"],
-      additionalProperties: false
+      required: ["subscriptionId", "resourceGroup", "storageAccount", "shareName"]
     },
     mcpInputSchema: {
       subscriptionId: z.string().min(1),
@@ -369,7 +367,7 @@ const TOOL_CATALOG = [
       resourceGroup: z.string().min(1),
       storageAccount: z.string().min(1),
       shareName: z.string().min(1)
-    }).strict(),
+    }).passthrough(),
     run: getClassicFileShare
   },
   {
@@ -383,8 +381,7 @@ const TOOL_CATALOG = [
         shareName: { type: "string", minLength: 1 },
         directoryPath: { type: "string" }
       },
-      required: ["storageAccount", "shareName"],
-      additionalProperties: false
+      required: ["storageAccount", "shareName"]
     },
     mcpInputSchema: {
       storageAccount: z.string().min(1),
@@ -395,7 +392,7 @@ const TOOL_CATALOG = [
       storageAccount: z.string().min(1),
       shareName: z.string().min(1),
       directoryPath: z.string().optional()
-    }).strict(),
+    }).passthrough(),
     run: listDirectoryEntries
   },
   {
@@ -409,8 +406,7 @@ const TOOL_CATALOG = [
         shareName: { type: "string", minLength: 1 },
         directoryPath: { type: "string" }
       },
-      required: ["storageAccount", "shareName"],
-      additionalProperties: false
+      required: ["storageAccount", "shareName"]
     },
     mcpInputSchema: {
       storageAccount: z.string().min(1),
@@ -421,7 +417,7 @@ const TOOL_CATALOG = [
       storageAccount: z.string().min(1),
       shareName: z.string().min(1),
       directoryPath: z.string().optional()
-    }).strict(),
+    }).passthrough(),
     run: getDirectorySize
   },
   {
@@ -436,8 +432,7 @@ const TOOL_CATALOG = [
         directoryPath: { type: "string" },
         maxItems: { type: "integer", minimum: 1, maximum: 5000 }
       },
-      required: ["storageAccount", "shareName"],
-      additionalProperties: false
+      required: ["storageAccount", "shareName"]
     },
     mcpInputSchema: {
       storageAccount: z.string().min(1),
@@ -450,7 +445,7 @@ const TOOL_CATALOG = [
       shareName: z.string().min(1),
       directoryPath: z.string().optional(),
       maxItems: z.number().int().min(1).max(5000).optional()
-    }).strict(),
+    }).passthrough(),
     run: listDirectoryEntriesRecursive
   },
   {
@@ -464,8 +459,7 @@ const TOOL_CATALOG = [
         shareName: { type: "string", minLength: 1 },
         filePath: { type: "string", minLength: 1 }
       },
-      required: ["storageAccount", "shareName", "filePath"],
-      additionalProperties: false
+      required: ["storageAccount", "shareName", "filePath"]
     },
     mcpInputSchema: {
       storageAccount: z.string().min(1),
@@ -476,7 +470,7 @@ const TOOL_CATALOG = [
       storageAccount: z.string().min(1),
       shareName: z.string().min(1),
       filePath: z.string().min(1)
-    }).strict(),
+    }).passthrough(),
     run: getFileProperties
   },
   {
@@ -489,8 +483,7 @@ const TOOL_CATALOG = [
         storageAccount: { type: "string", minLength: 1 },
         shareName: { type: "string", minLength: 1 }
       },
-      required: ["storageAccount", "shareName"],
-      additionalProperties: false
+      required: ["storageAccount", "shareName"]
     },
     mcpInputSchema: {
       storageAccount: z.string().min(1),
@@ -499,7 +492,7 @@ const TOOL_CATALOG = [
     parser: z.object({
       storageAccount: z.string().min(1),
       shareName: z.string().min(1)
-    }).strict(),
+    }).passthrough(),
     run: getShareStats
   }
 ];
