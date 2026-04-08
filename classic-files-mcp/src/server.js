@@ -618,10 +618,6 @@ async function handleStatelessRpc(request) {
 }
 
 function shouldUseStatelessFallback(sessionId, payload) {
-  if (typeof sessionId === "string" && sessionId.length > 0) {
-    return false;
-  }
-
   const requests = Array.isArray(payload) ? payload : [payload];
   return requests.every(
     (req) =>
