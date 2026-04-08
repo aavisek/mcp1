@@ -11,6 +11,15 @@ import { z } from "zod";
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 
+app.use((req, res, next) => {
+  const started = Date.now();
+  res.on("finish", () => {
+    // eslint-disable-next-line no-console
+    console.log(`${new Date().toISOString()} ${req.method} ${req.originalUrl} ${res.statusCode} ${Date.now() - started}ms`);
+  });
+  next();
+});
+
 const PORT = Number(process.env.PORT || 8081);
 const credential = new DefaultAzureCredential();
 const FILE_REQUEST_INTENT_OPTIONS = { fileRequestIntent: "backup" };
