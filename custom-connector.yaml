@@ -1,3 +1,5 @@
+# This is 2nd Connector
+# Azure AVD Connector 2 for MCP tools, secured with OAuth (Entra ID).
 swagger: '2.0'
 info:
   title: AzureAvdConnector2

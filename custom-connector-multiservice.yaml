@@ -1,3 +1,5 @@
+# This is 1st Connector
+# Azure AVD Connector 1 for MCP tools, secured with OAuth (Entra ID).
 swagger: '2.0'
 info:
   title: AzureAvdConnector1
