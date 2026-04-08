@@ -497,11 +497,30 @@ const TOOL_CATALOG = [
   }
 ];
 
-const TOOL_DEFINITIONS = TOOL_CATALOG.map(({ name, title, description, inputSchema }) => ({
+function toMcpCompatibleInputSchema(inputSchema) {
+  const sourceProperties = inputSchema?.properties ?? {};
+  const properties = Object.fromEntries(
+    Object.entries(sourceProperties).map(([key, value]) => [
+      key,
+      {
+        type: value?.type ?? "string"
+      }
+    ])
+  );
+
+  const required = Array.isArray(inputSchema?.required) ? inputSchema.required : [];
+
+  return {
+    type: "object",
+    properties,
+    ...(required.length > 0 ? { required } : {})
+  };
+}
+
+const TOOL_DEFINITIONS = TOOL_CATALOG.map(({ name, description, inputSchema }) => ({
   name,
-  title,
   description,
-  inputSchema
+  inputSchema: toMcpCompatibleInputSchema(inputSchema)
 }));
 
 const TOOL_EXECUTORS = new Map(TOOL_CATALOG.map((tool) => [tool.name, tool]));
