@@ -708,6 +708,21 @@ app.post("/", async (req, res) => {
   }
 });
 
+app.get("/.well-known/mcp.json", (_req, res) => {
+  res.status(200).json({
+    protocolVersion: "2024-11-05",
+    capabilities: {
+      tools: {
+        listChanged: true
+      }
+    },
+    serverInfo: {
+      name: "classic-azure-files-mcp",
+      version: "0.1.0"
+    }
+  });
+});
+
 app.get("/health", (_req, res) => {
   res.status(200).json({ ok: true });
 });

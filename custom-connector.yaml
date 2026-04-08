@@ -19,7 +19,7 @@ paths:
     post:
       summary: Execute Azure AVD Connector 2 MCP Tool
       description: Executes MCP tools via streamable protocol.
-      operationId: McpToolExecute
+      operationId: McpToolExecuteConnector2
       x-ms-agentic-protocol: mcp-streamable-1.0
       responses:
         '200':
