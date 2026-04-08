@@ -10,6 +10,16 @@ It is intentionally separate from your existing Azure MCP server so current beha
   - Lists classic file shares in a storage account.
 - `classic_files_share_get`
   - Gets one classic file share by name.
+- `classic_files_directory_list`
+  - Lists files and folders for one directory path.
+- `classic_files_directory_size`
+  - Calculates recursive size for one directory path.
+- `classic_files_directory_list_recursive`
+  - Recursively lists files and folders from a path with a `maxItems` limit.
+- `classic_files_file_get_properties`
+  - Gets metadata and size for one file path.
+- `classic_files_share_stats`
+  - Calculates total bytes, file count, and folder count for an entire share.
 
 ## Why This Exists
 
@@ -44,15 +54,15 @@ Default port is `8081`. Override with `PORT`.
 
 ## Tool Inputs
 
-Both tools require:
-
-- `subscriptionId`
-- `resourceGroup`
-- `storageAccount`
-
-`classic_files_share_get` additionally requires:
-
-- `shareName`
+- Share management tools:
+  - `classic_files_share_list` requires `subscriptionId`, `resourceGroup`, `storageAccount`.
+  - `classic_files_share_get` requires `subscriptionId`, `resourceGroup`, `storageAccount`, `shareName`.
+- Share data tools:
+  - `classic_files_directory_list` requires `storageAccount`, `shareName`, optional `directoryPath`.
+  - `classic_files_directory_size` requires `storageAccount`, `shareName`, optional `directoryPath`.
+  - `classic_files_directory_list_recursive` requires `storageAccount`, `shareName`, optional `directoryPath`, optional `maxItems`.
+  - `classic_files_file_get_properties` requires `storageAccount`, `shareName`, `filePath`.
+  - `classic_files_share_stats` requires `storageAccount`, `shareName`.
 
 ## Example Prompt Ideas
 
@@ -61,5 +71,5 @@ Both tools require:
 
 ## Notes
 
-- This server is read-only.
+- This server is read-only and can expose multiple MCP tools from a single endpoint.
 - It does not alter your existing `infra` deployment unless you explicitly wire it in.
