@@ -685,6 +685,8 @@ app.post("/", async (req, res) => {
     const sessionId = req.headers["mcp-session-id"];
 
     if (shouldUseStatelessFallback(sessionId, req.body)) {
+        // eslint-disable-next-line no-console
+        console.log(`${new Date().toISOString()} [DEBUG] Stateless path - methods: ${Array.isArray(req.body) ? req.body.map(r => r?.method).join(",") : req.body?.method}, hasIds: ${Array.isArray(req.body) ? req.body.map(r => Object.prototype.hasOwnProperty.call(r, "id")).join(",") : Object.prototype.hasOwnProperty.call(req.body, "id")}`);
       const requests = Array.isArray(req.body) ? req.body : [req.body];
       const responses = [];
 
@@ -704,8 +706,12 @@ app.post("/", async (req, res) => {
       }
 
       if (responses.length === 0) {
-        return res.status(202).end();
-      }
+          // Log when no responses generated (likely all notifications)
+          const allNotifications = Array.isArray(req.body) ? req.body.every(r => !Object.prototype.hasOwnProperty.call(r, "id")) : !Object.prototype.hasOwnProperty.call(req.body, "id");
+          // eslint-disable-next-line no-console
+          console.log(`${new Date().toISOString()} [DEBUG] Returning 202: sessionId=${sessionId}, isNotification=${allNotifications}, methods=${Array.isArray(req.body) ? req.body.map(r => r?.method).join(",") : req.body?.method}`);
+          return res.status(202).end();
+        }
 
       return res.status(200).json(responses[0]);
     }
@@ -715,6 +721,8 @@ app.post("/", async (req, res) => {
     if (typeof sessionId === "string" && transports.has(sessionId)) {
       transport = transports.get(sessionId);
     } else {
+        // eslint-disable-next-line no-console
+        console.log(`${new Date().toISOString()} [DEBUG] Creating new session-based transport, sessionId=${sessionId}`);
       const server = createServer();
 
       transport = new StreamableHTTPServerTransport({
