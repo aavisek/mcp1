@@ -683,6 +683,8 @@ const transports = new Map();
 app.post("/", async (req, res) => {
   try {
     const sessionId = req.headers["mcp-session-id"];
+    // eslint-disable-next-line no-console
+    console.log(`${new Date().toISOString()} [REQ] sessionId=${sessionId ?? "none"} body=${JSON.stringify(req.body).slice(0, 400)}`);
 
     if (shouldUseStatelessFallback(sessionId, req.body)) {
         // eslint-disable-next-line no-console
@@ -706,11 +708,11 @@ app.post("/", async (req, res) => {
       }
 
       if (responses.length === 0) {
-          // Log when no responses generated (likely all notifications)
-          const allNotifications = Array.isArray(req.body) ? req.body.every(r => !Object.prototype.hasOwnProperty.call(r, "id")) : !Object.prototype.hasOwnProperty.call(req.body, "id");
+          // Return 200 with empty object instead of 202 for better Copilot Studio compatibility.
+          // Some clients (including Copilot Studio) do not handle 202 correctly for notifications.
           // eslint-disable-next-line no-console
-          console.log(`${new Date().toISOString()} [DEBUG] Returning 202: sessionId=${sessionId}, isNotification=${allNotifications}, methods=${Array.isArray(req.body) ? req.body.map(r => r?.method).join(",") : req.body?.method}`);
-          return res.status(202).end();
+          console.log(`${new Date().toISOString()} [DEBUG] Notification-only batch, returning 200: method=${Array.isArray(req.body) ? req.body.map(r => r?.method).join(",") : req.body?.method}`);
+          return res.status(200).json({});
         }
 
       return res.status(200).json(responses[0]);
