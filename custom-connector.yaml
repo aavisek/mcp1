@@ -1,25 +1,27 @@
-# This is 2nd Connector
-# Azure AVD Connector 2 for MCP tools, secured with OAuth (Entra ID).
+# This is 3rd Connector (fresh identity)
+# Azure AVD Connector 3 for MCP tools, secured with OAuth (Entra ID).
 swagger: '2.0'
 info:
-  title: AzureAvdConnector2
+  title: AzureAvdConnector3
   description: >
-    Connector 2 for Azure AVD MCP tools secured with OAuth (Entra ID).
+    Connector 3 for Azure AVD MCP tools secured with OAuth (Entra ID).
   version: '1.0'
 
 host: azure-mcp-classic-files-server.calmpebble-33abca6a.centralindia.azurecontainerapps.io
 basePath: /
 schemes:
   - https
-consumes: []
-produces: []
+consumes:
+  - application/json
+produces:
+  - application/json
 
 paths:
   /:
     post:
-      summary: Execute Azure AVD Connector 2 MCP Tool
+      summary: Execute Azure AVD Connector 3 MCP Tool
       description: Executes MCP tools via streamable protocol.
-      operationId: McpToolExecuteConnector2
+      operationId: McpToolExecuteConnector3
       x-ms-agentic-protocol: mcp-streamable-1.0
       responses:
         '200':
