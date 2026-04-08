@@ -504,6 +504,22 @@ const TOOL_DEFINITIONS = TOOL_CATALOG.map(({ name, title, description, inputSche
 
 const TOOL_EXECUTORS = new Map(TOOL_CATALOG.map((tool) => [tool.name, tool]));
 
+function buildToolArgumentGuidance(toolName, toolArgs, error) {
+  const tool = TOOL_EXECUTORS.get(toolName);
+  const requiredArguments = tool?.inputSchema?.required ?? [];
+  const receivedArguments = toolArgs && typeof toolArgs === "object" ? Object.keys(toolArgs) : [];
+
+  return {
+    errorType: "InvalidToolArguments",
+    message: error instanceof Error ? error.message : "Tool arguments are invalid.",
+    toolName,
+    requiredArguments,
+    receivedArguments,
+    guidance:
+      "Provide all required arguments exactly as listed in the tool input schema and retry."
+  };
+}
+
 async function executeTool(name, args) {
   const tool = TOOL_EXECUTORS.get(name);
   if (!tool) {
@@ -558,7 +574,13 @@ async function handleStatelessRpc(request) {
       case "tools/call": {
         const toolName = request?.params?.name;
         const toolArgs = request?.params?.arguments ?? {};
-        const toolOutput = await executeTool(toolName, toolArgs);
+
+        let toolOutput;
+        try {
+          toolOutput = await executeTool(toolName, toolArgs);
+        } catch (error) {
+          toolOutput = buildToolArgumentGuidance(toolName, toolArgs, error);
+        }
 
         return {
           jsonrpc: "2.0",
