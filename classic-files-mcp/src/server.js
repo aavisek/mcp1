@@ -650,7 +650,13 @@ function createServer() {
         inputSchema: tool.mcpInputSchema
       },
       async (argumentsInput) => {
-        const result = await tool.run(tool.parser.parse(argumentsInput));
+        let result;
+        try {
+          const parsedArguments = tool.parser.parse(argumentsInput);
+          result = await tool.run(parsedArguments);
+        } catch (error) {
+          result = buildToolArgumentGuidance(tool.name, argumentsInput, error);
+        }
 
         return {
           content: [
