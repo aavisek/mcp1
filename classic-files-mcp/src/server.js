@@ -507,6 +507,13 @@ function toMcpCompatibleInputSchema(inputSchema) {
       }
     ])
   );
+    // Normalize types to those Copilot Studio / Power Platform connector runtime supports.
+    // "integer" is not recognised; map it to "number" to avoid tools/list parse failures.
+    for (const prop of Object.values(properties)) {
+      if (prop.type === "integer") {
+        prop.type = "number";
+      }
+    }
 
   const required = Array.isArray(inputSchema?.required) ? inputSchema.required : [];
 
