@@ -699,7 +699,7 @@ function createServer() {
 
 const transports = new Map();
 
-app.post("/", async (req, res) => {
+async function handleMcpPost(req, res) {
   try {
     const sessionId = req.headers["mcp-session-id"];
     // eslint-disable-next-line no-console
@@ -769,7 +769,10 @@ app.post("/", async (req, res) => {
       message: error instanceof Error ? error.message : "Unknown error"
     });
   }
-});
+}
+
+app.post("/", handleMcpPost);
+app.post("/mcp", handleMcpPost);
 
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.status(200).json({
