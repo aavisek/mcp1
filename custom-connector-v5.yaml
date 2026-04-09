@@ -36,12 +36,17 @@ securityDefinitions:
     flow: accessCode
     authorizationUrl: https://login.microsoftonline.com/01f48ee8-94f3-448d-90de-0a89fff4a6a4/oauth2/v2.0/authorize
     tokenUrl: https://login.microsoftonline.com/01f48ee8-94f3-448d-90de-0a89fff4a6a4/oauth2/v2.0/token
+    x-client-id: a3444234-271b-48cc-b801-53217add7121
+    x-client-secret: ""
+    x-tenant-id: 01f48ee8-94f3-448d-90de-0a89fff4a6a4
+    x-resource-url: b7800d5e-8f71-4f96-85f0-a618bd0536e5
+    x-scope: b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default
     scopes:
-      api://b7800d5e-8f71-4f96-85f0-a618bd0536e5/Mcp.Tools.ReadWrite: Access MCP tools
+      b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default: Access MCP tools
 
 security:
   - oauth2-auth:
-      - api://b7800d5e-8f71-4f96-85f0-a618bd0536e5/Mcp.Tools.ReadWrite
+      - b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default
 
 tags:
   - name: MCP
