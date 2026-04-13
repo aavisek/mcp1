@@ -1,0 +1,37 @@
+swagger: '2.0'
+info:
+  title: Azure AVD Connector 7
+  description: MCP streamable connector for classic Azure Files tools.
+  version: '1.0'
+host: >-
+  azure-mcp-classic-files-server.calmpebble-33abca6a.centralindia.azurecontainerapps.io
+basePath: /
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /mcp:
+    post:
+      operationId: InvokeMCP
+      x-ms-agentic-protocol: mcp-streamable-1.0
+      responses:
+        '200':
+          description: Success
+      summary: Execute Azure Files MCP Tools
+      description: >-
+        Lists shares, directories, files, and calculates sizes in classic Azure
+        Files.
+securityDefinitions:
+  oauth2-auth:
+    type: oauth2
+    flow: accessCode
+    tokenUrl: https://login.windows.net/common/oauth2/authorize
+    scopes:
+      b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default: b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default
+    authorizationUrl: https://login.microsoftonline.com/common/oauth2/authorize
+security:
+  - oauth2-auth:
+      - b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default

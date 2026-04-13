@@ -1,0 +1,39 @@
+swagger: '2.0'
+info:
+  title: Azure MCP Storage API
+  version: '1.0'
+  description: >
+    MCP server API for executing tools securely via Microsoft Entra ID OAuth and
+    integrating with Azure Container Apps backend services.
+host: >-
+  azure-mcp-storage-avd-server.icyground-e8fa53ea.centralindia.azurecontainerapps.io
+basePath: /
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /:
+    post:
+      summary: Execute MCP Tool
+      operationId: McpToolExecute
+      x-ms-agentic-protocol: mcp-streamable-1.0
+      responses:
+        '200':
+          description: Success
+      description: >-
+        This is a connector which will provide information about Azure Virtual
+        Desktop and Azure Storage
+securityDefinitions:
+  oauth2-auth:
+    type: oauth2
+    flow: accessCode
+    tokenUrl: https://login.windows.net/common/oauth2/authorize
+    scopes:
+      api://c337bb77-e7b4-4577-bccb-44fa9af2192d/Mcp.Tools.ReadWrite: api://c337bb77-e7b4-4577-bccb-44fa9af2192d/Mcp.Tools.ReadWrite
+    authorizationUrl: https://login.microsoftonline.com/common/oauth2/authorize
+security:
+  - oauth2-auth:
+      - api://c337bb77-e7b4-4577-bccb-44fa9af2192d/Mcp.Tools.ReadWrite
