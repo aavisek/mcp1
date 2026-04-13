@@ -1,0 +1,17 @@
+{
+  "name": "integer-fix-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Transparent HTTP proxy that rewrites type:integer → type:number in Azure MCP Server tool schemas for Copilot Studio compatibility",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

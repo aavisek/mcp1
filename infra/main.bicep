@@ -7,6 +7,12 @@ param readOnlyMode bool = true
 @description('Name for the Azure Container App')
 param acaName string
 
+@description('Deploy an additional storage-avd-style MCP container app clone.')
+param deployStorageStyleClone bool = false
+
+@description('Name for the storage-avd-style clone container app.')
+param storageStyleCloneAcaName string = '${acaName}-v2'
+
 @description('Deploy the classic Azure Files companion MCP service.')
 param deployClassicFilesCompanion bool = false
 
@@ -119,6 +125,23 @@ module aca 'modules/aca-infrastructure.bicep' = {
   }
 }
 
+module acaStorageStyleClone 'modules/aca-infrastructure-storage-style.bicep' = if (deployStorageStyleClone) {
+  name: 'aca-storage-style-clone'
+  params: {
+    name: storageStyleCloneAcaName
+    location: location
+    appInsightsConnectionString: appInsights.outputs.connectionString
+    azureMcpCollectTelemetry: string(!empty(appInsights.outputs.connectionString))
+    azureAdTenantId: tenant().tenantId
+    azureAdClientId: entraAppServer.outputs.entraAppClientId
+    azureAdInstance: environment().authentication.loginEndpoint
+    namespaces: mcpNamespaces
+    readOnlyMode: readOnlyMode
+    userAssignedManagedIdentityId: identity.outputs.managedIdentityId
+    userAssignedManagedIdentityClientId: identity.outputs.managedIdentityClientId
+  }
+}
+
 module classicFilesCompanion 'modules/aca-classic-files-companion.bicep' = if (deployClassicFilesCompanion && !empty(classicFilesCompanionImage)) {
   name: 'classic-files-companion'
   params: {
@@ -160,6 +183,8 @@ module readerRole 'modules/aca-role-assignment.bicep' = {
 output AZURE_RESOURCE_GROUP string = resourceGroup().name
 output CONTAINER_APP_NAME string = acaName
 output CONTAINER_APP_URL string = aca.outputs.containerAppUrl
+output CONTAINER_APP_CLONE_NAME string = deployStorageStyleClone ? storageStyleCloneAcaName : ''
+output CONTAINER_APP_CLONE_URL string = deployStorageStyleClone ? acaStorageStyleClone!.outputs.containerAppUrl : ''
 output AZURE_TENANT_ID string = tenant().tenantId
 output AZURE_LOCATION string = location
 output APPLICATION_INSIGHTS_NAME string = appInsightsName

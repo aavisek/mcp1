@@ -1,0 +1,36 @@
+swagger: '2.0'
+info:
+  title: AzureAvdConnectorV2
+  description: MCP streamable connector for Azure AVD MCP tools (storage-style profile) secured with OAuth (Entra ID).
+  version: '1.0'
+host: azure-mcp-storage-avd-server-v2.icyground-e8fa53ea.centralindia.azurecontainerapps.io
+basePath: /
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /:
+    post:
+      summary: Execute Azure AVD Connector V2 MCP Tool
+      operationId: McpToolExecuteConnectorV2
+      x-ms-agentic-protocol: mcp-streamable-1.0
+      responses:
+        '200':
+          description: Success
+      description: >-
+        Execute Azure MCP Tools for managing Compute, Storage, Key Vault,
+        Resource Groups, and Azure Virtual Desktop resources.
+securityDefinitions:
+  oauth2-auth:
+    type: oauth2
+    flow: accessCode
+    tokenUrl: https://login.windows.net/common/oauth2/authorize
+    scopes:
+      b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default: b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default
+    authorizationUrl: https://login.microsoftonline.com/common/oauth2/authorize
+security:
+  - oauth2-auth:
+      - b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default

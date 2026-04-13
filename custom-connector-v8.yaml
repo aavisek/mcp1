@@ -1,0 +1,44 @@
+swagger: '2.0'
+info:
+  title: Azure AVD Connector 8 (Schema Proxy)
+  description: >-
+    MCP streamable connector routing through the integer-fix proxy.
+    The proxy rewrites type:integer → type:number in tool schemas for
+    Copilot Studio compatibility, then forwards to the Azure MCP backend.
+  version: '1.0'
+# UPDATE this host after running the deployment commands below.
+# Expected value: azure-mcp-schema-proxy.icyground-e8fa53ea.centralindia.azurecontainerapps.io
+# Verify with: az containerapp show -g AVD-LAB-RG1 -n azure-mcp-schema-proxy --query properties.configuration.ingress.fqdn -o tsv
+host: azure-mcp-schema-proxy.icyground-e8fa53ea.centralindia.azurecontainerapps.io
+basePath: /
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /:
+    post:
+      summary: Execute Azure MCP Tools (via schema-fix proxy)
+      operationId: McpToolExecuteConnector8
+      x-ms-agentic-protocol: mcp-streamable-1.0
+      responses:
+        '200':
+          description: Success
+      description: >-
+        Execute Azure MCP tools for managing Compute, Storage, Key Vault,
+        Resource Groups, and Azure Virtual Desktop resources.
+        Requests are transparently proxied to azure-mcp-storage-avd-server-v2
+        after fixing integer schema types incompatible with Copilot Studio.
+securityDefinitions:
+  oauth2-auth:
+    type: oauth2
+    flow: accessCode
+    tokenUrl: https://login.windows.net/common/oauth2/authorize
+    scopes:
+      b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default: b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default
+    authorizationUrl: https://login.microsoftonline.com/common/oauth2/authorize
+security:
+  - oauth2-auth:
+      - b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default
