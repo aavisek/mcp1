@@ -142,6 +142,10 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
               value: 'http://0.0.0.0:5000'
             }
             {
+              name: 'ASPNETCORE_FORWARDEDHEADERS_ENABLED'
+              value: 'true'
+            }
+            {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: appInsightsConnectionString
             }

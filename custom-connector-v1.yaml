@@ -1,46 +1,36 @@
 swagger: '2.0'
 info:
   title: AzureAvdConnector1
-  description: >
-    Connector 1 for Azure AVD MCP tools secured with OAuth (Entra ID).
+  description: MCP streamable connector for Azure AVD MCP tools secured with OAuth (Entra ID).
   version: '1.0'
-
 host: azure-mcp-multiservice-server.salmonmeadow-5a07697c.centralindia.azurecontainerapps.io
 basePath: /
 schemes:
   - https
-
-consumes: []
-produces: []
-
+consumes:
+  - application/json
+produces:
+  - application/json
 paths:
   /:
     post:
       summary: Execute Azure AVD Connector 1 MCP Tool
-      description: Executes MCP tools via streamable protocol.
       operationId: McpToolExecuteConnector1
       x-ms-agentic-protocol: mcp-streamable-1.0
       responses:
         '200':
           description: Success
-
-definitions: {}
-parameters: {}
-responses: {}
-
+      description: >-
+        Execute Azure MCP Tools for managing Compute, Storage, Key Vault,
+        Resource Groups, and Azure Virtual Desktop resources.
 securityDefinitions:
   oauth2-auth:
     type: oauth2
     flow: accessCode
-    authorizationUrl: https://login.microsoftonline.com/01f48ee8-94f3-448d-90de-0a89fff4a6a4/oauth2/v2.0/authorize
-    tokenUrl: https://login.microsoftonline.com/01f48ee8-94f3-448d-90de-0a89fff4a6a4/oauth2/v2.0/token
+    tokenUrl: https://login.windows.net/common/oauth2/authorize
     scopes:
-      b7800d5e-8f71-4f96-85f0-a618bd0536e5/Mcp.Tools.ReadWrite: Access MCP tools
-
+      b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default: b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default
+    authorizationUrl: https://login.microsoftonline.com/common/oauth2/authorize
 security:
   - oauth2-auth:
-      - b7800d5e-8f71-4f96-85f0-a618bd0536e5/Mcp.Tools.ReadWrite
-
-tags:
-  - name: MCP
-    description: MCP Tool Execution APIs
+      - b7800d5e-8f71-4f96-85f0-a618bd0536e5/.default
